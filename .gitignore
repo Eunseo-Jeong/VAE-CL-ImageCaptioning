@@ -1,0 +1,4 @@
+*.out
+*.pt
+dataset/*
+results/*
