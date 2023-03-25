@@ -11,7 +11,7 @@ def config_data():
         help="batch_size"
     )
     parser.add_argument(
-        "--learning_rate", type=float, default=1e-5,
+        "--learning_rate", type=float, default=1e-4,
         help="learning_rate"
     )
     parser.add_argument(

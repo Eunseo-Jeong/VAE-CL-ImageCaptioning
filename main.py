@@ -3,7 +3,7 @@ import json
 import torch
 # from model_copy import generate
 import evaluate
-from new_dataloader import collate_fn
+# from new_dataloader import collate_fn
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 import os
@@ -135,8 +135,8 @@ def main():
     eval_dataset = newDataset(val_path, 'val')
     # test_dataset = 
 
-    train_dataloader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True, collate_fn=collate_fn)
-    eval_dataloader = DataLoader(eval_dataset, batch_size=config['batch_size'], shuffle=False, collate_fn=collate_fn)
+    train_dataloader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True, collate_fn=train_dataset.collate_fn)
+    eval_dataloader = DataLoader(eval_dataset, batch_size=config['batch_size'], shuffle=False, collate_fn=eval_dataset.collate_fn)
 
     model = ModelClass(config)
     model.to(device)

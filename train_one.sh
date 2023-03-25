@@ -1,12 +1,12 @@
 #/bin/bash
 
-latent_size=768
+latent_size=64
 dd=0.7
 dc=0.2
 di=0.1
 cuda=0
-contrastive=false
-cls_latent_vector=true
+contrastive=true
+cls_latent_vector=false
 
 if [ $contrastive = true ] && [ $cls_latent_vector = true ];then
     python -u main.py \

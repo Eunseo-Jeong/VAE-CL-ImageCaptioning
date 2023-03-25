@@ -9,9 +9,6 @@ from PIL import Image
 from torchvision.io import read_image
 from collections import Counter  # list의 단어 count해주는 class
 
-def collate_fn(batch):
-	img_path, image, image_id, id, caption = zip(*batch)
-	return img_path, image, image_id, id, caption
 
 class newDataset(Dataset):
     def __init__(self, path, mode):
@@ -36,8 +33,10 @@ class newDataset(Dataset):
             # transforms.ToTensor()
         ])
         
-        self.annotation = self.annotation["annotations"][:50000] # images, licenses, annotations
-    
+        if self.mode == 'train':
+            self.annotation = self.annotation["annotations"][:50000] # images, licenses, annotations
+        elif self.mode == 'val':
+            self.annotation = self.annotation["annotations"][:10000]
 
         # # answer_list
         # self.answer_list = []
@@ -57,10 +56,10 @@ class newDataset(Dataset):
         # self.label_answer_idx2id = {i: j for i, j in enumerate(self.label_answer_list)}
         # # print(len(self.label_answer_idx2id))
 
-        
+            
     def __len__(self):
         return len(self.annotation) # 60000
-    
+
 
     def __getitem__(self, idx):
         
@@ -100,4 +99,9 @@ class newDataset(Dataset):
             image = image.convert(mode="RGB")
         image = self.transform(image) # 224, 224
 
+        return img_path, image, image_id, id, caption
+
+
+    def collate_fn(self, batch):
+        img_path, image, image_id, id, caption = zip(*batch)
         return img_path, image, image_id, id, caption

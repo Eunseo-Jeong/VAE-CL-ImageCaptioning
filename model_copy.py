@@ -142,6 +142,63 @@ class ModelClass(nn.Module):
         # print(z.shape)
         return z, mu, logvar
 
+    def generate(self, device, images): 
+        device = device
+
+        # print( self.tokenizer.pad_token_id, self.tokenizer.bos_token_id, self.tokenizer.eos_token_id, self.tokenizer.unk_token_id )
+
+        ############################### image ###############################
+        pixel_values = self.feature_extractor(images, return_tensors="pt").pixel_values
+        pixel_values = pixel_values.to(device) # torch.Size([64, 3, 224, 224])
+
+        batch = pixel_values.size()[0]
+        
+        # print(pixel_values.shape)
+
+        vit_encoder = self.vision_encoder(
+            pixel_values = pixel_values
+        ) # last_hidden_state, pooler_output
+        encoder_hidden_states = vit_encoder['last_hidden_state'] # batch, 197, 768
+        vit_cls = vit_encoder.last_hidden_state[:,0:1,:] # CLS (batch, 1, 768) 
+
+        # print(encoder_hidden_states.shape)
+        # print(vit_cls.shape)
+
+        
+        if self.config['cls_latent_vector'] == True:
+            image_z, image_mu, image_logvar = self.calculate_latent(vit_cls) # make z latent vector from image last_hidden_states
+        else:
+            image_z, image_mu, image_logvar = self.calculate_latent(encoder_hidden_states)
+            
+        # print(encoder_hidden_states.shape) # 64, 197, 768
+        # print(image_z.shape) # 64, 197, 64
+
+        ############################################################################################################
+        # print(image_z.size()[-1], self.decoder_hidden_size)
+        if image_z.size()[-1] != self.decoder_hidden_size:
+            image_z = self.latent2hidden(image_z) # (batch, 197, 64) (64, 768) -> (batch, 197, 768) # text 생성에 입력으로 들어가야 함
+        # print(image_z.shape)
+        image2hidden = self.enc_to_dec_proj(image_z) # batch, 197, 768 -> batch, 197, 768
+        # print(image2hidden.shape)
+
+        return_dict = True
+
+        
+        batch_input = torch.ones(batch, 1).long().to(device) * self.eos_token_id
+        
+        for i in range(100):
+            out = self.text_decoder(
+                input_ids = batch_input,
+                encoder_hidden_states=image2hidden
+            ) # logits, past_key_values
+            out = out['logits'] # torch.Size([48, 1, 50258])
+            out = torch.argmax(out[:,-1:,:], dim=-1) # torch.Size([48, 1])
+            # print(out.shape) 
+            batch_input = torch.cat((batch_input,out), dim=-1)
+            # print(batch_input.shape)
+     
+        return batch_input
+
     def forward(self, mode, device, images, captions): 
         device = device
 
