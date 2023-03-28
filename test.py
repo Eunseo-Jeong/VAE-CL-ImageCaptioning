@@ -31,7 +31,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 args = parser.parse_args()
 device = "cuda:" + str(args.cuda)
-print(device)
+# print(device)
 
 config = json.load(open(os.path.join(args.result_path, "config.json")))
 
@@ -42,14 +42,17 @@ model = ModelClass(config)
 # model.to(device)
 
 
-
 train_path, val_path = data_path()
 
 eval_dataset = newDataset(val_path, 'val')
 eval_dataloader = DataLoader(eval_dataset, batch_size=config['batch_size'], shuffle=False, collate_fn=eval_dataset.collate_fn)
 
-test_performance_save = os.path.join(os.getcwd(), 'test_performance.json')
-test_result_save = os.path.join(os.getcwd(), 'test_result.json')
+# /home/nlplab/hdd1/eunseo/VAE-CL-ImageCaptioning_baseline/results/0326_1e-04
+save_path = model_path.split('results/')[-1].split('/')
+save_path = save_path[0]+'_'+save_path[-1]
+
+test_performance_save = os.path.join(os.getcwd(), save_path + '_test_performance.json')
+test_result_save = os.path.join(os.getcwd(), save_path + '_test_result.json')
 
 
 bleu = evaluate.load('bleu')
@@ -121,5 +124,3 @@ with torch.no_grad():
     
     with open(test_result_save, "w") as file:
         json.dump(result, file, indent=4)
-        
-    
