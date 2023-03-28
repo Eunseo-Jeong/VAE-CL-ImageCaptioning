@@ -7,7 +7,6 @@ import evaluate
 from tqdm import tqdm
 from datapath import data_path
 from new_dataloader import newDataset
-from new_dataloader import collate_fn
 from model_copy import ModelClass
 from torch.utils.data import DataLoader
 
@@ -47,7 +46,7 @@ model = ModelClass(config)
 train_path, val_path = data_path()
 
 eval_dataset = newDataset(val_path, 'val')
-eval_dataloader = DataLoader(eval_dataset, batch_size=config['batch_size'], shuffle=False, collate_fn=collate_fn)
+eval_dataloader = DataLoader(eval_dataset, batch_size=config['batch_size'], shuffle=False, collate_fn=eval_dataset.collate_fn)
 
 test_performance_save = os.path.join(os.getcwd(), 'test_performance.json')
 test_result_save = os.path.join(os.getcwd(), 'test_result.json')
@@ -80,7 +79,7 @@ for epoch in range(30):
 
         for i, batch in enumerate(tqdm(eval_dataloader)):
             result[epoch][i] = {}
-            
+
             mode = "eval"
             img_path = batch[0]
             images = batch[1]
