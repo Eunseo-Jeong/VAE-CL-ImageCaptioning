@@ -1,8 +1,7 @@
 # VAE-CL-ImageCaptioning
 
 <h3>System architecture</h3>
-<img width="850" alt="image" src="![스크린샷 2024-03-26 09 46 23](https://github.com/Eunseo-Jeong/VAE-CL-ImageCaptioning/assets/64178197/2d4d2f94-9059-487f-a30d-a255076d83dd)
-")
+<img width="850" alt="image" src="![스크린샷 2024-03-26 09 46 23](https://github.com/Eunseo-Jeong/VAE-CL-ImageCaptioning/assets/64178197/7decc2d7-9e0d-479e-8ea7-342890022704)")
 ">
 
 <br></br> 
